@@ -1,9 +1,12 @@
-# YouTube to Ebook
+# Content Funnel - Multi-Source Content Aggregator
 
-Transform YouTube videos from your favorite channels into beautifully formatted EPUB ebooks.
+Transform content from **YouTube, articles, podcasts, research papers, and more** into beautifully formatted EPUB ebooks.
 
-## Features
+> **🆕 New!** This project has been enhanced with a modular Content Funnel pipeline that supports multiple content sources beyond just YouTube. See [CONTENT_FUNNEL.md](CONTENT_FUNNEL.md) for details.
 
+## ✨ Features
+
+### Original YouTube Features
 - Fetches latest videos from YouTube channels (automatically filters out Shorts)
 - Extracts transcripts from videos
 - Uses Claude AI to transform transcripts into polished magazine-style articles
@@ -11,11 +14,21 @@ Transform YouTube videos from your favorite channels into beautifully formatted 
 - Optional: Email delivery with ebook attachment
 - Optional: Web dashboard for easy management
 
-## Quick Start
+### 🆕 New Content Funnel Features
+- **Multiple Content Sources**: YouTube, Vimeo, Dailymotion, articles, RSS feeds, podcasts, and research papers
+- **Modular Architecture**: Pluggable miners for easy extension
+- **Unified Evidence Pool**: ContentBrain aggregates all content types
+- **Enhanced CLI**: Interactive interface with Rich library
+- **Comprehensive Testing**: Unit, integration, and performance tests
+- **Backward Compatible**: Original YouTube-only pipeline still works
+
+## 🚀 Quick Start
+
+### Original YouTube Mode (Simple)
 
 1. **Clone and install:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/youtube-to-ebook.git
+   git clone https://github.com/saxster/youtube-to-ebook.git
    cd youtube-to-ebook
    pip install -r requirements.txt
    ```
@@ -38,6 +51,49 @@ Transform YouTube videos from your favorite channels into beautifully formatted 
    ```bash
    python main.py
    ```
+
+### 🆕 Enhanced Content Funnel Mode
+
+#### Interactive CLI (Recommended)
+```bash
+python main_pipeline.py --cli
+```
+
+This launches an interactive menu where you can:
+- Select from multiple content sources (YouTube, articles, podcasts, etc.)
+- Add content dynamically
+- Generate articles with AI
+- Create ebooks
+
+#### Programmatic Usage
+```python
+from main_pipeline import run_pipeline
+
+sources = {
+    "youtube": "@mkbhd,@veritasium",
+    "article": "https://example.com/article",
+    "rss": "https://example.com/feed.xml"
+}
+
+run_pipeline(sources, output_format="epub")
+```
+
+#### Examples
+```bash
+python examples.py  # Run demonstration scripts
+```
+
+## 📚 Supported Content Sources
+
+| Source Type | Description | Example |
+|------------|-------------|---------|
+| **YouTube** | Video transcripts | `@mkbhd` |
+| **Vimeo** | Video metadata | `https://vimeo.com/123456` |
+| **Dailymotion** | Video metadata | `https://dailymotion.com/video/x8abc` |
+| **Articles** | Web articles | `https://example.com/article` |
+| **RSS Feeds** | Blog/news feeds | `https://blog.com/feed.xml` |
+| **Papers** | arXiv/PDF | `machine learning` or `arxiv:2301.00001` |
+| **Podcasts** | Audio transcripts | `https://podcast.com/feed.xml` |
 
 ## Getting API Keys
 
@@ -89,17 +145,64 @@ See [SKILL.md](SKILL.md) for detailed explanations.
 ## Project Structure
 
 ```
-├── main.py              # Run the full pipeline
-├── get_videos.py        # Fetch videos from YouTube
-├── get_transcripts.py   # Extract video transcripts
-├── write_articles.py    # Transform to articles with Claude
-├── send_email.py        # Create EPUB & send email
+├── main.py              # Original YouTube pipeline (backward compatible)
+├── main_pipeline.py     # 🆕 Enhanced multi-source pipeline
+├── cli.py               # 🆕 Interactive CLI interface
+├── examples.py          # 🆕 Usage examples
+│
+├── models.py            # 🆕 Evidence data model
+├── content_brain.py     # 🆕 Unified evidence pool
+├── ghostwriter.py       # 🆕 Enhanced AI article writer
+│
+├── miners/              # 🆕 Modular content extractors
+│   ├── base_miner.py
+│   ├── youtube_miner.py
+│   ├── article_miner.py
+│   ├── rss_miner.py
+│   ├── paper_miner.py
+│   ├── podcast_miner.py
+│   ├── vimeo_miner.py
+│   └── dailymotion_miner.py
+│
+├── outputs/             # 🆕 Output format creators
+│   └── epub_creator.py
+│
+├── tests/               # 🆕 Comprehensive test suite
+│   ├── test_models.py
+│   ├── test_content_brain.py
+│   └── test_integration.py
+│
+├── get_videos.py        # Legacy: Fetch YouTube videos
+├── get_transcripts.py   # Legacy: Extract transcripts
+├── write_articles.py    # Legacy: Transform with Claude
+├── send_email.py        # Legacy: Create EPUB & send email
 ├── dashboard.py         # Streamlit web dashboard
 ├── video_tracker.py     # Track processed videos
 ├── channels.txt         # Your channel list
 ├── .env                 # Your API keys (not committed)
 └── newsletters/         # Archive of generated ebooks
 ```
+
+## 🧪 Testing
+
+Run the comprehensive test suite:
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=. --cov-report=html
+
+# Run specific tests
+pytest tests/test_models.py
+```
+
+## 📖 Documentation
+
+- **[CONTENT_FUNNEL.md](CONTENT_FUNNEL.md)** - Comprehensive guide to the new modular pipeline
+- **[SKILL.md](SKILL.md)** - Original YouTube API documentation and quirks
+- **examples.py** - Working code examples
 
 ## License
 
