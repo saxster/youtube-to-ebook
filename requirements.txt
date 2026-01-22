@@ -5,3 +5,17 @@ anthropic
 markdown
 ebooklib
 requests
+
+# New dependencies for enhanced pipeline
+newspaper3k
+trafilatura
+feedparser
+arxiv
+PyPDF2
+openai-whisper
+rich
+typer
+
+# Testing
+pytest
+pytest-cov
