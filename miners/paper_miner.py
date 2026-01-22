@@ -3,6 +3,7 @@ Paper Miner - Extract content from academic papers (arXiv, PDFs).
 """
 
 import os
+import tempfile
 from typing import List, Optional
 from datetime import datetime
 import urllib.request
@@ -102,15 +103,17 @@ class PaperMiner(BaseMiner):
             for i, result in enumerate(search.results()):
                 print(f"  {i+1}. {result.title}")
                 
-                # Download PDF and extract text
-                pdf_path = f"/tmp/arxiv_{result.entry_id.split('/')[-1]}.pdf"
-                result.download_pdf(filename=pdf_path)
+                # Use temporary file with proper cleanup
+                with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
+                    pdf_path = tmp_file.name
+                    result.download_pdf(filename=pdf_path)
                 
-                # Extract text from PDF
-                content = self._extract_text_from_pdf(pdf_path)
-                
-                # Clean up
-                os.remove(pdf_path)
+                try:
+                    # Extract text from PDF
+                    content = self._extract_text_from_pdf(pdf_path)
+                finally:
+                    # Clean up temporary file
+                    os.remove(pdf_path)
                 
                 if content:
                     evidence = Evidence(
@@ -150,15 +153,17 @@ class PaperMiner(BaseMiner):
             search = arxiv.Search(id_list=[arxiv_id])
             result = next(search.results())
             
-            # Download PDF
-            pdf_path = f"/tmp/arxiv_{arxiv_id}.pdf"
-            result.download_pdf(filename=pdf_path)
+            # Use temporary file with proper cleanup
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
+                pdf_path = tmp_file.name
+                result.download_pdf(filename=pdf_path)
             
-            # Extract text
-            content = self._extract_text_from_pdf(pdf_path)
-            
-            # Clean up
-            os.remove(pdf_path)
+            try:
+                # Extract text
+                content = self._extract_text_from_pdf(pdf_path)
+            finally:
+                # Clean up temporary file
+                os.remove(pdf_path)
             
             if not content:
                 return None
@@ -189,15 +194,17 @@ class PaperMiner(BaseMiner):
     def _fetch_pdf_from_url(self, url: str) -> Optional[Evidence]:
         """Download and parse a PDF from URL."""
         try:
-            # Download PDF
-            pdf_path = "/tmp/downloaded_paper.pdf"
-            urllib.request.urlretrieve(url, pdf_path)
+            # Use temporary file with proper cleanup
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
+                pdf_path = tmp_file.name
+                urllib.request.urlretrieve(url, pdf_path)
             
-            # Extract text
-            content = self._extract_text_from_pdf(pdf_path)
-            
-            # Clean up
-            os.remove(pdf_path)
+            try:
+                # Extract text
+                content = self._extract_text_from_pdf(pdf_path)
+            finally:
+                # Clean up temporary file
+                os.remove(pdf_path)
             
             if not content:
                 return None

@@ -3,6 +3,7 @@ Podcast Miner - Extract content from podcasts via RSS and audio transcription.
 """
 
 import os
+import tempfile
 from typing import List, Optional
 from datetime import datetime
 import urllib.request
@@ -186,19 +187,20 @@ class PodcastMiner(BaseMiner):
             return None
         
         try:
-            # Download audio file
-            audio_path = "/tmp/podcast_audio.mp3"
-            print(f"      Downloading audio...")
-            urllib.request.urlretrieve(audio_url, audio_path)
+            # Use temporary file with proper cleanup
+            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as tmp_file:
+                audio_path = tmp_file.name
+                print(f"      Downloading audio...")
+                urllib.request.urlretrieve(audio_url, audio_path)
             
-            # Transcribe
-            print(f"      Transcribing (this may take a while)...")
-            result = self.whisper_model.transcribe(audio_path)
-            
-            # Clean up
-            os.remove(audio_path)
-            
-            return result["text"]
+            try:
+                # Transcribe
+                print(f"      Transcribing (this may take a while)...")
+                result = self.whisper_model.transcribe(audio_path)
+                return result["text"]
+            finally:
+                # Clean up temporary file
+                os.remove(audio_path)
         
         except Exception as e:
             print(f"      ⚠ Transcription error: {e}")
