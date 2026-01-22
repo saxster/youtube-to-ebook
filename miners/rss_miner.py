@@ -14,7 +14,6 @@ except ImportError:
 
 from models import Evidence, SourceType
 from miners.base_miner import BaseMiner
-from miners.article_miner import ArticleMiner
 
 
 class RSSMiner(BaseMiner):
@@ -37,9 +36,11 @@ class RSSMiner(BaseMiner):
         
         self.fetch_full_content = fetch_full_content
         
-        # Use ArticleMiner to fetch full content if needed
+        # Lazy import ArticleMiner only if needed
+        self.article_miner = None
         if fetch_full_content:
             try:
+                from miners.article_miner import ArticleMiner
                 self.article_miner = ArticleMiner()
             except ImportError:
                 print("  ⚠ Article extraction not available, will use RSS descriptions only")
